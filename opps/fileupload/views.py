@@ -1,14 +1,11 @@
 # coding: utf-8
 
 from opps.images.models import Image
-from opps.articles.models import ArticleImage
-from django.views.generic import CreateView, DeleteView
+from opps.articles.models import Album, ArticleImage
+from django.views.generic import CreateView
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.utils import simplejson
-from django.core.urlresolvers import reverse
-
-from django.conf import settings
 
 
 def response_mimetype(request):
@@ -23,13 +20,15 @@ class ImageCreateView(CreateView):
     template_name = 'fileupload/image_form.html'
 
     def form_valid(self, form):
+        f = self.request.FILES.get('image')
         self.object = form.save()
-        f = self.request.FILES.get('file')
+        print self.kwargs.get('album_pk')
+
         data = [{'name': f.name,
-                 'url': settings.MEDIA_URL + "pictures/" + f.name.replace(" ", "_"),
-                 'thumbnail_url': settings.MEDIA_URL + "pictures/" + f.name.replace(" ", "_"),
-                 'delete_url': '',
-                 'delete_type': "DELETE"}]
+                 'url': "%s" % self.object.image.url,
+                 'thumbnail_url': "%s" % self.object.image.url,
+                 "delete_url": "",
+                 "delete_type": "DELETE"}]
         response = JSONResponse(data, {}, response_mimetype(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
@@ -37,26 +36,12 @@ class ImageCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(ImageCreateView, self).get_context_data(**kwargs)
         # context['pictures'] = []Image.objects.all()
-        context['pictures'] = []
+        album_pk = self.kwargs.get('album_pk')
+        try:
+            context['album'] = Album.objets.get(pk=int(album_pk))
+        except:
+            context['album'] = None
         return context
-
-
-# class PictureDeleteView(DeleteView):
-#     model = Image
-
-#     def delete(self, request, *args, **kwargs):
-#         """
-#         This does not actually delete the file, only the database record.  But
-#         that is easy to implement.
-#         """
-#         self.object = self.get_object()
-#         self.object.delete()
-#         if request.is_ajax():
-#             response = JSONResponse(True, {}, response_mimetype(self.request))
-#             response['Content-Disposition'] = 'inline; filename=files.json'
-#             return response
-#         else:
-#             return HttpResponseRedirect('/upload/new')
 
 
 class JSONResponse(HttpResponse):
