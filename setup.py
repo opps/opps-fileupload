@@ -8,9 +8,6 @@ from setuptools import setup, find_packages
 
 from opps import fileupload
 
-
-install_requires = ["opps"]
-
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Developers",
                "License :: OSI Approved :: MIT License",
@@ -83,7 +80,6 @@ setup(
     packages=find_packages(exclude=('doc', 'docs',)),
     data_files=files,
     package_dir={'opps': 'opps'},
-    install_requires=install_requires,
     include_package_data=True,
     package_data={
         'fileupload': ['templates/*', 'templatetags/*', 'static/*']
