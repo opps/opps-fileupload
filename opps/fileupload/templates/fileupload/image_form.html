@@ -1,19 +1,31 @@
-{% extends "fileupload_base.html" %}
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify suit_tags admin_urls %}
+{% load url from future %}
 {% load upload_tags %}
+
+{% block extrahead %}{{ block.super }}
+
+
+    <!-- Generic page styles -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    <!-- Bootstrap styles for responsive website layout, supporting different screen sizes -->
+
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <!-- link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-image-gallery.min.css" -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.fileupload-ui.css">
+
+{% endblock %}
+
 
 {% block content %}
 <div class="container">
-    <div class="page-header">
-        <h1>{{album}}</h1>
-    </div>
     <form id="fileupload" method="post" action="." enctype="multipart/form-data">{% csrf_token %}
 
-        <input type="text" name="title" value="title">
-        <input type="text" name="site" value="1">
-        <input type="text" name="user" value="1">
-        <input type="text" name="slug" value="title-1">
-        <input type="text" name="date_available" value="2013-01-01">
-
+        <div class="well">
+           <h3>Multi image upload</h3>
+           <strong>{{article.child_class}}</strong>: {{article.title}}<br />
+           <strong>Channel</strong>: {{article.channel}}<br />
+        </div>
 
         <div class="row fileupload-buttonbar">
             <div class="span7">
@@ -47,35 +59,14 @@
     </div>
 
 </div>
-<!-- modal-gallery is the modal dialog used for the image gallery -->
-<div id="modal-gallery" class="modal modal-gallery hide fade" data-filter=":odd">
-    <div class="modal-header">
-        <a class="close" data-dismiss="modal">&times;</a>
-        <h3 class="modal-title"></h3>
-    </div>
-    <div class="modal-body"><div class="modal-image"></div></div>
-    <div class="modal-footer">
-        <a class="btn modal-download" target="_blank">
-            <i class="icon-download"></i>
-            <span>Download</span>
-        </a>
-        <a class="btn btn-success modal-play modal-slideshow" data-slideshow="5000">
-            <i class="icon-play icon-white"></i>
-            <span>Slideshow</span>
-        </a>
-        <a class="btn btn-info modal-prev">
-            <i class="icon-arrow-left icon-white"></i>
-            <span>Previous</span>
-        </a>
-        <a class="btn btn-primary modal-next">
-            <span>Next</span>
-            <i class="icon-arrow-right icon-white"></i>
-        </a>
-    </div>
-</div>
-{% upload_js %}
+{% endblock %}
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+{% block extrajs %}
+  {{ block.super }}
+
+{% upload_js article %}
+
+
 <script src="{{ STATIC_URL }}js/jquery.ui.widget.js"></script>
 <script src="{{ STATIC_URL }}js/tmpl.min.js"></script>
 <script src="{{ STATIC_URL }}js/load-image.min.js"></script>
@@ -89,4 +80,40 @@
 <script src="{{ STATIC_URL }}js/locale.js"></script>
 <script src="{{ STATIC_URL }}js/main.js"></script>
 <script src="{{ STATIC_URL }}js/csrf.js"></script>
+
+<script>
+$('#fileupload').bind('fileuploadsubmit', function (e, data) {
+    var inputs = data.context.find(':input');
+    if (inputs.filter('[required][value=""]').first().focus().length) {
+        return false;
+    }
+    data.formData = inputs.serializeArray();
+});
+</script>
+
 {% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+{% endblock %}
+
+{% block content_title_value %}
+  {% trans 'Add' %} {{ opts.verbose_name }}
+{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% if not is_popup %}
+  {% block breadcrumbs %}
+    <ul class="breadcrumb">
+      <li>
+        <a href="/admin/articles/{{article.child_class|lower}}/{{article.pk}}/">Back to {{ article.child_class|lower }}</a>
+      </li>
+    </ul>
+  {% endblock %}
+{% endif %}
+
+
+

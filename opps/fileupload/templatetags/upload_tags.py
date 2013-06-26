@@ -4,7 +4,11 @@ register = template.Library()
 
 
 @register.simple_tag
-def upload_js():
+def upload_js(article):
+    sources = article.sources.through.objects.filter(
+        **{article.sources.source_field_name: article}
+    )
+    article_sources = sources[0].source.name if sources else ''
     return """
 <!-- The template to display files available for upload -->
 <script id="template-upload" type="text/x-tmpl">
@@ -13,6 +17,11 @@ def upload_js():
         <td class="preview"><span class="fade"></span></td>
         <td class="name"><span>{%=file.name%}</span></td>
         <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+
+        <td class="extra"><label>Title: <input type="text" name="title" value='"""+article.title+"""' required></label>
+        <label>Caption: <input type="text" name="caption"></label>
+        <label>Source: <input type="text" name="source" value='"""+article_sources+"""'></label></td>
+
         {% if (file.error) { %}
             <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
         {% } else if (o.files.valid && !i) { %}
@@ -56,13 +65,13 @@ def upload_js():
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2"></td>
         {% } %}
-        <td class="delete">
+        <!-- td class="delete">
             <button class="btn btn-danger" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
                 <i class="icon-trash icon-white"></i>
                 <span>{%=locale.fileupload.destroy%}</span>
             </button>
             <input type="checkbox" name="delete" value="1">
-        </td>
+        </td -->
     </tr>
 {% } %}
 </script>
