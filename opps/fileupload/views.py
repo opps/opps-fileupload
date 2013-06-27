@@ -16,8 +16,7 @@ from opps.images.generate import image_url
 def response_mimetype(request):
     if "application/json" in request.META['HTTP_ACCEPT']:
         return "application/json"
-    else:
-        return "text/plain"
+    return "text/plain"
 
 
 @csrf_exempt
