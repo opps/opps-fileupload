@@ -21,7 +21,7 @@ def response_mimetype(request):
 
 
 @csrf_exempt
-@login_required
+@login_required(login_url='/admin/')
 def image_create(request, article_pk):
 
     article = get_object_or_404(Article, pk=int(article_pk))
