@@ -41,6 +41,7 @@ def image_create(request, article_pk):
                 source = Source.objects.create(
                     name=source,
                     slug=slugify(source),
+                    user=request.user,
                     published=True
                 )
 
