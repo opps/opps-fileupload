@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.utils import simplejson
 from django.utils.text import slugify
+from django.contrib.auth.decorators import login_required
 
 from opps.images.models import Image
 from opps.articles.models import Article, ArticleImage
@@ -20,6 +21,7 @@ def response_mimetype(request):
 
 
 @csrf_exempt
+@login_required
 def image_create(request, article_pk):
 
     article = get_object_or_404(Article, pk=int(article_pk))
