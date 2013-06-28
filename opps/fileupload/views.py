@@ -46,7 +46,7 @@ def image_create(request, article_pk):
                 )
 
         slug = slugify(title)
-        slug = "{0}-{1}".format(slug, random.getrandbits(32))
+        slug = "{0}-{1}".format(slug[:100], random.getrandbits(32))
 
         instance = Image(
             site=article.site,
