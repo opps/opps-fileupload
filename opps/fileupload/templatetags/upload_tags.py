@@ -20,6 +20,7 @@ def upload_js(article):
 
         <td class="extra"><label>Title: <input type="text" name="title" value='"""+article.title+"""' required></label>
         <label>Caption: <input type="text" name="caption"></label>
+        <label>Order: <input type="text" name="order" value="0"/></label>
         <label>Source: <input type="text" name="source" value='"""+article_sources+"""'></label></td>
 
         {% if (file.error) { %}
