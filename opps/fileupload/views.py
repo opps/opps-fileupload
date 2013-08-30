@@ -32,11 +32,11 @@ def image_create(request, article_pk=None):
         user = request.user or article.user
         date_available = article.date_available
     else:
-		article = None
-		title = 'Uploaded Image'
-		site = get_current_site(request)
-		user = request.user
-		date_available = timezone.now()
+        article = None
+        title = 'Uploaded Image'
+        site = get_current_site(request)
+        user = request.user
+        date_available = timezone.now()
 
     if request.method == "POST":
         f = request.FILES.get('image')
@@ -75,13 +75,13 @@ def image_create(request, article_pk=None):
         instance.save()
 
         if article:
-			order = request.POST.get('order', 0)
-			ArticleImage.objects.create(
-				article=article,
-				image=instance,
-				caption=caption,
-				order=int(order)
-			)
+            order = request.POST.get('order', 0)
+            ArticleImage.objects.create(
+                article=article,
+                image=instance,
+                caption=caption,
+                order=int(order)
+            )
 
         data = [{'name': f.name,
                  'url': "%s" % instance.image.url,
