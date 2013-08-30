@@ -23,12 +23,14 @@
 
         <div class="well">
            <h3>Multi image upload</h3>
+           {% if article %}
            <strong>{{article.child_class}}</strong>: {{article.title}}<br />
            <strong>Channel</strong>: {{article.channel}}<br />
+           {% endif %}
         </div>
 
         <div class="row fileupload-buttonbar">
-            <div class="span7">
+            <div class="span12">
                 <span class="btn btn-primary fileinput-button">
                     <i class="icon-plus icon-white"></i>
                     <span>Add files...</span>
@@ -42,6 +44,14 @@
                     <i class="icon-ban-circle icon-white"></i>
                     <span>Cancel upload</span>
                 </button>
+                
+                &nbsp;
+                <button id="replicate" class="btn btn-small btn-info">{% trans "Copy first image data to the others."%}</button>
+				&nbsp;
+				<button id="clear-replicate" class="btn btn-small btn-danger">{% trans "Clear data copy"%}</button>
+				&nbsp;
+				<button id="arrange-orders" class="btn btn-small">{% trans "Arrange orders"%}</button>
+        
             </div>
             <div class="span5 fileupload-progress fade">
                 <div class="progress progress-success progres-striped active">
@@ -118,21 +128,26 @@ $(document).unbind('keydown').bind('keydown', function (event) {
 {% endblock %}
 
 {% block content_title_value %}
-  {% trans 'Add' %} {{ opts.verbose_name }}
+  Multi image upload
 {% endblock %}
 
 {% block coltype %}{% if ordered_objects %}colMS{% else %}colM{% endif %}{% endblock %}
 
 {% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
 
+
 {% if not is_popup %}
+
   {% block breadcrumbs %}
-    <ul class="breadcrumb">
-      <li>
-        <a href="/admin/articles/{{article.child_class|lower}}/{{article.pk}}/">Back to {{ article.child_class|lower }}</a>
-      </li>
-    </ul>
+	  {% if article %}
+		<ul class="breadcrumb">
+		  <li>
+			<a href="/admin/articles/{{article.child_class|lower}}/{{article.pk}}/">Back to {{ article.child_class|lower }}</a>
+		  </li>
+		</ul>
+	   {% endif %}
   {% endblock %}
+
 {% endif %}
 
 

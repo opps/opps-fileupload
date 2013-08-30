@@ -4,9 +4,10 @@ import random
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.utils import simplejson
+from django.utils import simplejson, timezone
 from django.utils.text import slugify
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.models import get_current_site
 
 from opps.images.models import Image
 from opps.articles.models import Article, ArticleImage
@@ -22,19 +23,30 @@ def response_mimetype(request):
 
 @csrf_exempt
 @login_required(login_url='/admin/')
-def image_create(request, article_pk):
+def image_create(request, article_pk=None):
 
-    article = get_object_or_404(Article, pk=int(article_pk))
+    if article_pk:
+        article = get_object_or_404(Article, pk=int(article_pk))
+        title = article.title
+        site = article.site
+        user = request.user or article.user
+        date_available = article.date_available
+    else:
+		article = None
+		title = 'Uploaded Image'
+		site = get_current_site(request)
+		user = request.user
+		date_available = timezone.now()
 
     if request.method == "POST":
         f = request.FILES.get('image')
 
-        title = request.POST.get('title') or article.title
+        title = request.POST.get('title') or title
         caption = request.POST.get('caption', '')
 
         source = request.POST.get('source', None)
         if source:
-            qs = Source.objects.filter(name=source, site=article.site)
+            qs = Source.objects.filter(name=source, site=site)
             if qs:
                 source = qs[0]
             else:
@@ -49,9 +61,9 @@ def image_create(request, article_pk):
         slug = "{0}-{1}".format(slug[:100], random.getrandbits(32))
 
         instance = Image(
-            site=article.site,
-            user=article.user,
-            date_available=article.date_available,
+            site=site,
+            user=user,
+            date_available=date_available,
             title=title,
             slug=slug,
             image=f,
@@ -62,13 +74,14 @@ def image_create(request, article_pk):
 
         instance.save()
 
-        order = request.POST.get('order', 0)
-        ArticleImage.objects.create(
-            article=article,
-            image=instance,
-            caption=caption,
-            order=int(order)
-        )
+        if article:
+			order = request.POST.get('order', 0)
+			ArticleImage.objects.create(
+				article=article,
+				image=instance,
+				caption=caption,
+				order=int(order)
+			)
 
         data = [{'name': f.name,
                  'url': "%s" % instance.image.url,

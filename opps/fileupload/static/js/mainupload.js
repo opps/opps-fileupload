@@ -74,4 +74,61 @@ $(function () {
             });
         });
     }
+    
+    $('#replicate').click(function(e){
+        var title = $("[name='title']").first().val();
+        var caption = $("[name='caption']").first().val();
+        var source = $("[name='source']").first().val();
+        var order = $("[name='order']").first().val();
+        
+        $("[name='title']").val(title);
+        $("[name='caption']").val(caption);
+        $("[name='source']").val(source);
+        $("[name='order']").val(order);
+        
+        arrange_orders();
+        e.preventDefault();
+        return false;
+    });
+    
+    $('#clear-replicate').click(function(e){
+        var title = $("[name='title']").first().val();
+        var caption = $("[name='caption']").first().val();
+        var source = $("[name='source']").first().val();
+        var order = $("[name='order']").first().val();
+        
+        $("[name='title']").val('');
+        $("[name='caption']").val('');
+        $("[name='source']").val('');
+        $("[name='order']").val('');
+       
+        $("[name='title']").first().val(title);
+        $("[name='caption']").first().val(caption);
+        $("[name='source']").first().val(source);
+        $("[name='order']").first().val(order); 
+        
+        e.preventDefault();
+        return false;
+    });
+    
+    $('#arrange-orders').click(function(e){
+	    arrange_orders();
+	    e.preventDefault();
+	    return false;	
+	});
 });
+
+
+function arrange_orders()
+{
+    var order = $("[name='order']").first().val();
+    if (order == "") {order = 0;}
+    order = parseInt(order);
+    
+    $("[name='order']").each(function(){
+	    $(this).val(order);
+	    order = order + 1;
+	});
+    
+    
+}
