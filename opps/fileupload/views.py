@@ -71,6 +71,9 @@ def image_create(request, article_pk=None):
         )
         if source:
             instance.source = source
+        
+        if caption:
+            instance.description = caption
 
         instance.save()
 
