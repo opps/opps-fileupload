@@ -11,7 +11,6 @@ from django.contrib.sites.models import get_current_site
 
 from opps.images.models import Image
 from opps.articles.models import Article, ArticleImage
-from opps.sources.models import Source
 from opps.images.generate import image_url
 
 
@@ -45,18 +44,6 @@ def image_create(request, article_pk=None):
         caption = request.POST.get('caption', '')
 
         source = request.POST.get('source', None)
-        if source:
-            qs = Source.objects.filter(name=source, site=site)
-            if qs:
-                source = qs[0]
-            else:
-                source = Source.objects.create(
-                    name=source,
-                    slug=slugify(source),
-                    user=request.user,
-                    published=True
-                )
-
         slug = slugify(title)
         slug = "{0}-{1}".format(slug[:100], random.getrandbits(32))
 
@@ -70,8 +57,8 @@ def image_create(request, article_pk=None):
             published=True,
         )
         if source:
-            instance.source = source
-        
+            instance._source = source
+
         if caption:
             instance.description = caption
 
